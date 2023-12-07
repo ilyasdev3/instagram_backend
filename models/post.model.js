@@ -15,6 +15,24 @@ const PostSchema = new Schema(
       type: String,
       required: true,
     },
+    likes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    comments: [
+      {
+        userId: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+        comment: {
+          type: String,
+          max: 500,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
