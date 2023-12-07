@@ -1,10 +1,11 @@
-const express = require('express')
-const multer = require('multer')
-const router = express.Router()
-const postController = require('../controllers/post.controller')
-const { verifyToken } = require('../middlewares/verifytToken.middlerware')
+const express = require("express");
+const multer = require("multer");
+const router = express.Router();
+const postController = require("../controllers/post.controller");
+const { verifyToken } = require("../middlewares/verifytToken.middlerware");
 
-router.post('/create', verifyToken, postController.create)
-router.get('/allPosts', postController.getAllPosts)
+router.post("/create", verifyToken, postController.create);
+router.get("/allPosts", postController.getAllPosts);
+router.get("/:postId", postController.getPost);
 
-module.exports = router
+module.exports = router;
