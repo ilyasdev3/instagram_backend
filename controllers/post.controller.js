@@ -1,5 +1,9 @@
 const Post = require("../models/post.model");
 const User = require("../models/user.model");
+const Following = require("../models/following.model");
+const Follower = require("../models/follower.model");
+const Like = require("../models/like.model");
+const Comment = require("../models/comment.model");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
 const controller = {};
@@ -52,6 +56,44 @@ controller.getAllPosts = async (req, res) => {
       return res.status(STATUS.NOT_FOUND).json({ message: "No post found" });
 
     return res.status(STATUS.SUCCESS).json({ posts, message: "All posts" });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(STATUS.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal server error" });
+  }
+};
+
+controller.getPost = async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    // send user along with post
+    const post = await Post.findById(postId).populate(
+      "userId",
+      "-password -email -createdAt -updatedAt -__v -isAdmin"
+    );
+    const likes = await Like.find({ postId: postId });
+    const comments = await Comment.find({ postId: postId }).populate(
+      "userId",
+      "-password -email -createdAt -updatedAt -__v -isAdmin"
+    );
+    const likesCount = likes.length;
+    const commentsCount = comments.length;
+
+    if (!post)
+      return res.status(STATUS.NOT_FOUND).json({ message: "Post not found" });
+
+    const postData = {
+      post,
+      likes: likes,
+      comments: comments,
+      likesCount: likesCount,
+      commentsCount: commentsCount,
+    };
+
+    return res
+      .status(STATUS.SUCCESS)
+      .json({ post: postData, message: "Post found" });
   } catch (error) {
     console.log(error);
     return res
